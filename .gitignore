@@ -1,0 +1,14 @@
+# Ignore build and debug files
+bin/
+obj/
+.vs/
+*.suo
+*.user
+*.cache
+*.log
+
+# Ignore dependencies
+packages/
+
+# Ignore temporary files
+*.tmp
