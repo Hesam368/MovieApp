@@ -1,0 +1,34 @@
+@model List<Movie>
+@{
+    ViewData["Title"] = "Index";
+}
+<h3>Index</h3>
+@if (Model.Count == 0)
+{
+    <p>No Movie has been created yet!</p>
+}
+else{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Genre</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Genre)</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+}
