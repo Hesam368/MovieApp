@@ -7,4 +7,6 @@ public class MovieAppContext : DbContext
         : base(options) { }
 
     public DbSet<Movie> Movies { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<MembershipType> MembershipTypes { get; set; }
 }
