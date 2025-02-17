@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MovieApp.Models;
 
 namespace MovieApp.Controllers
 {
@@ -24,6 +26,25 @@ namespace MovieApp.Controllers
             if (customer == null)
             {
                 return NotFound();
+            }
+            return View(customer);
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            var membershipTypes = await _context.MembershipTypes.ToListAsync();
+            ViewBag.MembershipTypes = new SelectList(membershipTypes, "Id", "Name");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Customer customer)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(customer);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
             }
             return View(customer);
         }

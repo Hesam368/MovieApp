@@ -1,0 +1,25 @@
+@model Customer
+<h3>Create</h3>
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Birthdate" class="control-label"></label>
+        <input asp-for="Birthdate" class="form-control" />
+        <span asp-validation-for="Birthdate" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="MembershipTypeId" class="control-label"></label>
+        <select asp-for="MembershipTypeId" class="form-control" asp-items="ViewBag.MembershipTypes"></select>
+        <span asp-validation-for="MembershipTypeId" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="IsSubscribedToNewsletter" class="control-label"></label>
+        <input asp-for="IsSubscribedToNewsletter" type="checkbox" />
+        <span asp-validation-for="IsSubscribedToNewsletter" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

@@ -2,12 +2,13 @@
 @{
     ViewData["Title"] = "Index";
 }
-<h3>Index</h3>
+<h3>Movies</h3>
 @if (Model.Count == 0)
 {
     <p>No Movie has been created yet!</p>
 }
-else{
+else
+{
     <table class="table">
         <thead>
             <tr>
@@ -31,3 +32,4 @@ else{
         </tbody>
     </table>
 }
+<a asp-action="Create" class="btn btn-primary">Create Movie</a>
