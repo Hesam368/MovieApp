@@ -8,6 +8,10 @@ namespace MovieApp.Models
         public byte Id { get; set; }
 
         [Required]
+        [StringLength(60)]
+        public string Name { get; set; }
+
+        [Required]
         public short SignUpFee { get; set; }
 
         [Required]
