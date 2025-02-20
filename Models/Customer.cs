@@ -10,10 +10,13 @@ namespace MovieApp.Models
         [Required]
         [StringLength(60)]
         public string Name { get; set; }
+
         [Required]
         public bool IsSubscribedToNewsletter { get; set; }
+        public DateOnly Birthdate { get; set; }
         public MembershipType MembershipType { get; set; }
         public byte MembershipTypeId { get; set; }
-        public DateOnly? Birthdate { get; set; }
+
+        public List<CustomerMovie>? customerMovies { get; set; }
     }
 }

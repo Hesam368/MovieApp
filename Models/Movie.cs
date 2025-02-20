@@ -14,5 +14,7 @@ namespace MovieApp.Models
         [Required]
         [StringLength(30)]
         public string Genre { get; set; }
+
+        public List<CustomerMovie>? customerMovies { get; set; }
     }
 }

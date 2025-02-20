@@ -13,12 +13,6 @@ namespace MovieApp.Controllers
             _context = context;
         }
 
-        public IActionResult Random()
-        {
-            var movie = new Movie() { Title = "Shrek!" };
-            return View(movie);
-        }
-
         public async Task<IActionResult> Index()
         {
             var movies = await _context.Movies.ToListAsync();
@@ -74,9 +68,14 @@ namespace MovieApp.Controllers
             return View(movie);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(Movie movie)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
+            if (movie == null)
+            {
+                return NotFound();
+            }
             _context.Remove(movie);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

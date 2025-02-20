@@ -19,5 +19,7 @@ namespace MovieApp.Models
 
         [Required]
         public byte DiscountRate { get; set; }
+
+        public List<Customer> customers { get; set; }
     }
 }
