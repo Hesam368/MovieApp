@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieApp.Models
 {
@@ -14,8 +15,10 @@ namespace MovieApp.Models
         [Required]
         public bool IsSubscribedToNewsletter { get; set; }
         public DateOnly Birthdate { get; set; }
-        public MembershipType MembershipType { get; set; }
         public byte MembershipTypeId { get; set; }
+
+        [ForeignKey("MembershipTypeId")]
+        public MembershipType? MembershipType { get; set; }
 
         public List<CustomerMovie>? customerMovies { get; set; }
     }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieApp.Models
 {
@@ -6,12 +7,16 @@ namespace MovieApp.Models
     {
         [Key]
         public int Id { get; set; }
-
-        public Customer Customer { get; set; }
+        
         public int CustomerId { get; set; }
 
-        public Movie Movie { get; set; }
+        [ForeignKey("CustomerId")]
+        public Customer? Customer { get; set; }
+
+
         public int MovieId { get; set; }
+        [ForeignKey("MovieId")]
+        public Movie? Movie { get; set; }
 
     }
 }

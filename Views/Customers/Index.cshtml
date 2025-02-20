@@ -10,17 +10,23 @@ else
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Subscribed To Newsletter</th>
                 <th>Membership Type</th>
+
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                    <td>@Html.DisplayFor(modelItem => item.MembershipType.Name)</td>
+                    <td>@item.Name</td>
+                    <td>@item.IsSubscribedToNewsletter</td>
+                    <td>@item.MembershipType?.Name</td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="ViewMovies" asp-route-id="@item.Id">View Movies</a>
                     </td>
                 </tr>
 
