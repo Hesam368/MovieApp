@@ -1,6 +1,6 @@
 @model List<Movie>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Movies";
 }
 <h3>Movies</h3>
 @if (Model.Count == 0)
@@ -9,11 +9,12 @@
 }
 else
 {
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Title</th>
                 <th>Genre</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>

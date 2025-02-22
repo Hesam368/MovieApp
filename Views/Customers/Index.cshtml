@@ -1,4 +1,7 @@
 @model List<Customer>
+@{
+    ViewData["Title"] = "Customers";
+}
 <h3>Customers</h3>
 @if (Model.Count == 0)
 {
@@ -6,12 +9,13 @@
 }
 else
 {
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Subscribed To Newsletter</th>
                 <th>Membership Type</th>
+                <th>Actions</th>
 
             </tr>
         </thead>

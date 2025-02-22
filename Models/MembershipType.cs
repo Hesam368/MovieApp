@@ -9,7 +9,7 @@ namespace MovieApp.Models
 
         [Required]
         [StringLength(60)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required]
         public short SignUpFee { get; set; }
