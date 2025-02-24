@@ -22,14 +22,14 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var membershipTypes = await _context.MembershipTypes.ToListAsync();
-            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
+            GetMembershipTypes();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(Customer customer)
         {
+            CustomerValidator(customer);
             if (ModelState.IsValid)
             {
                 _context.Add(customer);
@@ -39,21 +39,32 @@ namespace MovieApp.Controllers
             return View(customer);
         }
 
+        private void CustomerValidator(Customer customer)
+        {
+            if (customer != null)
+            {
+                if (string.IsNullOrEmpty(customer.Name) || customer.Name.Length > 60)
+                    ModelState.AddModelError("Name", "The name must be not null and at most 60 characters!");
+                if (customer.MembershipTypeId == 0)
+                    ModelState.AddModelError("MembershipType", "A membership type must be selected!");
+            }
+        }
+
         public async Task<IActionResult> Edit(int id)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
+            var customer = await _context.Customers.Include(c => c.MembershipType).FirstOrDefaultAsync(c => c.Id == id);
             if (customer == null)
             {
                 return NotFound();
             }
-            var membershipTypes = await _context.MembershipTypes.ToListAsync();
-            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
+            GetMembershipTypes();
             return View(customer);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(Customer customer)
         {
+            CustomerValidator(customer);
             if (ModelState.IsValid)
             {
                 _context.Update(customer);
@@ -65,18 +76,18 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
+            var customer = await _context.Customers.Include(c => c.MembershipType).FirstOrDefaultAsync(c => c.Id == id);
             if (customer == null)
             {
                 return NotFound(); 
             }
+            GetMembershipTypes();
             return View(customer);
         }
 
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(Customer customer)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
             if (customer == null)
             {
                 return NotFound();
@@ -88,12 +99,19 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
+            var customer = await _context.Customers.Include(c => c.MembershipType).FirstOrDefaultAsync(c => c.Id == id);
             if (customer == null)
             {
                 return NotFound();
             }
+            GetMembershipTypes();
             return View(customer);
+        }
+
+        private async void GetMembershipTypes()
+        {
+            var membershipTypes = await _context.MembershipTypes.ToListAsync();
+            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
         }
     }
 }

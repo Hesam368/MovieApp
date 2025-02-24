@@ -41,10 +41,10 @@ namespace MovieApp.Controllers
         {
             if (movie != null)
             {
-                if (movie.Title.Length > 60)
-                    ModelState.AddModelError("Title", "The title must be at most 60 characters!");
-                if (movie.Genre.Length > 30)
-                    ModelState.AddModelError("Genre", "The genre must be at most 30 characters!");
+                if (string.IsNullOrEmpty(movie.Title) || movie.Title.Length > 60)
+                    ModelState.AddModelError("Title", "The title must be not null and at most 60 characters!");
+                if (string.IsNullOrEmpty(movie.Genre) || movie.Genre.Length > 30)
+                    ModelState.AddModelError("Genre", "The genre must be not null and at most 30 characters!");
             }
         }
 
@@ -61,6 +61,7 @@ namespace MovieApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Movie movie)
         {
+            MovieValidator(movie);
             if (ModelState.IsValid)
             {
                 _context.Update(movie);
@@ -80,10 +81,9 @@ namespace MovieApp.Controllers
             return View(movie);
         }
 
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(Movie movie)
         {
-            var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
                 return NotFound();

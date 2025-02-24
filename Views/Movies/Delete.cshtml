@@ -2,16 +2,32 @@
 @{
     ViewData["Title"] = "Delete Movie";
 }
-<h2>Are you sure you want to delete this movie?</h2>
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <div class="form-group">
-        <label asp-for="Title" class="control-label"></label>
-        <p>@Model.Title</p>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-danger text-light">
+                    <h4>Are you sure you want to delete this movie?</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="form-group mb-3">
+                            <label asp-for="Title" class="control-label"></label>
+                            <input asp-for="Title" class="form-control" readonly=True />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Genre" class="control-label"></label>
+                            <input asp-for="Genre" class="form-control" readonly=True />
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <a asp-controller="Movies" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Genre" class="control-label"></label>
-        <p>@Model.Genre</p>
-    </div>
-    <button type="submit" class="btn btn-danger">Delete</button>
-</form>
+</div>
