@@ -22,7 +22,8 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Create()
         {
-            GetMembershipTypes();
+            var membershipTypes = await _context.MembershipTypes.ToListAsync();
+            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
             return View();
         }
 
@@ -57,7 +58,8 @@ namespace MovieApp.Controllers
             {
                 return NotFound();
             }
-            GetMembershipTypes();
+            var membershipTypes = await _context.MembershipTypes.ToListAsync();
+            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
             return View(customer);
         }
 
@@ -81,7 +83,8 @@ namespace MovieApp.Controllers
             {
                 return NotFound(); 
             }
-            GetMembershipTypes();
+            var membershipTypes = await _context.MembershipTypes.ToListAsync();
+            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
             return View(customer);
         }
 
@@ -104,14 +107,9 @@ namespace MovieApp.Controllers
             {
                 return NotFound();
             }
-            GetMembershipTypes();
-            return View(customer);
-        }
-
-        private async void GetMembershipTypes()
-        {
             var membershipTypes = await _context.MembershipTypes.ToListAsync();
             ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
+            return View(customer);
         }
     }
 }
