@@ -92,5 +92,14 @@ namespace MovieApp.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
+
+        public async Task<IActionResult> Customers(int id)
+        {
+            var customers = await _context.CustomerMovies
+                .Where(cm => cm.MovieId == id)
+                .Select(cm => cm.Customer)
+                .ToListAsync();
+            return View(customers);
+        }
     }
 }
