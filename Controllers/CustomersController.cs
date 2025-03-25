@@ -111,5 +111,14 @@ namespace MovieApp.Controllers
             ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
             return View(customer);
         }
+
+        public async Task<IActionResult> Movies(int id)
+        {
+            var movies = await _context.CustomerMovies
+                .Where(cm => cm.CustomerId == id)
+                .Select(cm => cm.Movie)
+                .ToListAsync();
+            return View(movies);
+        }
     }
 }
