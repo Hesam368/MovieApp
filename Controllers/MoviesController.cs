@@ -97,6 +97,8 @@ namespace MovieApp.Controllers
         {
             var customers = await _context.CustomerMovies
                 .Where(cm => cm.MovieId == id)
+                .Include(cm => cm.Customer)
+                .ThenInclude(c => c.MembershipType)
                 .Select(cm => cm.Customer)
                 .ToListAsync();
             return View(customers);
