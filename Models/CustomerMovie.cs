@@ -18,5 +18,7 @@ namespace MovieApp.Models
         [ForeignKey("MovieId")]
         public Movie? Movie { get; set; }
 
+        public int Quantity { get; set; }
+
     }
 }
