@@ -24,6 +24,6 @@ namespace MovieApp.Models
         [ForeignKey("MembershipTypeId")]
         public MembershipType? MembershipType { get; set; }
 
-        public List<CustomerMovie>? customerMovies { get; set; }
+        public ICollection<CustomerMovie>? customerMovies { get; set; }
     }
 }
