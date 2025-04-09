@@ -30,7 +30,7 @@ else
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Movies" asp-route-id="@item.Id">View Movies</a>
+                        <a asp-controller="CustomerMovie" asp-action="Movies" asp-route-id="@item.Id">View Movies</a>
                     </td>
                 </tr>
 

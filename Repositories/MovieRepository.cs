@@ -42,14 +42,5 @@ namespace MovieApp.Repositories
             return movie;
         }
 
-        public async Task<IEnumerable<Customer?>> GetCustomersByMovieId(int movieId)
-        {
-            return await _context.CustomerMovies
-                .Where(cm => cm.MovieId == movieId)
-                .Include(cm => cm.Customer)
-                .ThenInclude(c => c.MembershipType)
-                .Select(cm => cm.Customer)
-                .ToListAsync();
-        }
     }
 }

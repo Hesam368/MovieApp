@@ -2,27 +2,28 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MovieApp.Models;
+using MovieApp.Repositories;
 
 namespace MovieApp.Controllers
 {
     public class CustomersController : Controller
     {
-        private readonly MovieAppContext _context;
+        private readonly ICustomerRepository _customerRepository;
 
-        public CustomersController(MovieAppContext context)
+        public CustomersController(ICustomerRepository customerRepository)
         {
-            _context = context;
+            _customerRepository = customerRepository;
         }
 
         public async Task<IActionResult> Index()
         {
-            var customers = await _context.Customers.Include(c => c.MembershipType).ToListAsync();
+            var customers = await _customerRepository.GetAllCustomers();
             return View(customers);
         }
 
         public async Task<IActionResult> Create()
         {
-            var membershipTypes = await _context.MembershipTypes.ToListAsync();
+            var membershipTypes = await _customerRepository.GetMembershipTypes();
             ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
             return View();
         }
@@ -33,8 +34,7 @@ namespace MovieApp.Controllers
             CustomerValidator(customer);
             if (ModelState.IsValid)
             {
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
+                await _customerRepository.UpdateCustomer(customer);
                 return RedirectToAction("Index");
             }
             return View(customer);
@@ -53,12 +53,12 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var customer = await _context.Customers.Include(c => c.MembershipType).FirstOrDefaultAsync(c => c.Id == id);
+            var customer = await _customerRepository.GetCustomerById(id);
             if (customer == null)
             {
                 return NotFound();
             }
-            var membershipTypes = await _context.MembershipTypes.ToListAsync();
+            var membershipTypes = await _customerRepository.GetMembershipTypes();
             ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
             return View(customer);
         }
@@ -69,8 +69,7 @@ namespace MovieApp.Controllers
             CustomerValidator(customer);
             if (ModelState.IsValid)
             {
-                _context.Update(customer);
-                await _context.SaveChangesAsync();
+                await _customerRepository.UpdateCustomer(customer);
                 return RedirectToAction("Index");
             }
             return View(customer);
@@ -78,12 +77,12 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var customer = await _context.Customers.Include(c => c.MembershipType).FirstOrDefaultAsync(c => c.Id == id);
+            var customer = await _customerRepository.GetCustomerById(id);
             if (customer == null)
             {
                 return NotFound(); 
             }
-            var membershipTypes = await _context.MembershipTypes.ToListAsync();
+            var membershipTypes = await _customerRepository.GetMembershipTypes();
             ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
             return View(customer);
         }
@@ -95,30 +94,20 @@ namespace MovieApp.Controllers
             {
                 return NotFound();
             }
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+            await _customerRepository.DeleteCustomer(customer);
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var customer = await _context.Customers.Include(c => c.MembershipType).FirstOrDefaultAsync(c => c.Id == id);
+            var customer = await _customerRepository.GetCustomerById(id);
             if (customer == null)
             {
                 return NotFound();
             }
-            var membershipTypes = await _context.MembershipTypes.ToListAsync();
+            var membershipTypes = await _customerRepository.GetMembershipTypes();
             ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
             return View(customer);
-        }
-
-        public async Task<IActionResult> Movies(int id)
-        {
-            var movies = await _context.CustomerMovies
-                .Where(cm => cm.CustomerId == id)
-                .Select(cm => cm.Movie)
-                .ToListAsync();
-            return View(movies);
         }
     }
 }

@@ -6,9 +6,8 @@ namespace MovieApp.Repositories
     {
         Task<IEnumerable<Movie>> GetAllMovies();
         Task<Movie> AddMovie(Movie movie);
-        Task<Movie?> GetMovieById(int MovieId);
+        Task<Movie?> GetMovieById(int movieId);
         Task<Movie?> UpdateMovie(Movie movie);
         Task<Movie?> DeleteMovie(Movie movie);
-        Task<IEnumerable<Customer?>> GetCustomersByMovieId(int movieId);
     }
 }

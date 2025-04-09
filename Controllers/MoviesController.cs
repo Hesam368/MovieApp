@@ -91,10 +91,5 @@ namespace MovieApp.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> Customers(int id)
-        {
-            var customers = await _movieRepository.GetCustomersByMovieId(id);
-            return View(customers);
-        }
     }
 }
