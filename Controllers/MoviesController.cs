@@ -1,21 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApp.Models;
+using MovieApp.Repositories;
 
 namespace MovieApp.Controllers
 {
     public class MoviesController : Controller
     {
-        private readonly MovieAppContext _context;
+        private readonly IMovieRepository _movieRepository;
 
-        public MoviesController(MovieAppContext context)
+        public MoviesController(IMovieRepository movieRepository)
         {
-            _context = context;
+            _movieRepository = movieRepository;
         }
 
         public async Task<IActionResult> Index()
         {
-            var movies = await _context.Movies.ToListAsync();
+            var movies = await _movieRepository.GetAllMovies();
             return View(movies);
         }
 
@@ -30,8 +31,7 @@ namespace MovieApp.Controllers
             MovieValidator(movie);
             if (ModelState.IsValid)
             {
-                _context.Add(movie);
-                await _context.SaveChangesAsync();
+                await _movieRepository.AddMovie(movie);
                 return RedirectToAction("Index");
             }
             return View(movie);
@@ -50,7 +50,7 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
+            var movie = await _movieRepository.GetMovieById(id);
             if (movie == null)
             {
                 return NotFound();
@@ -64,8 +64,7 @@ namespace MovieApp.Controllers
             MovieValidator(movie);
             if (ModelState.IsValid)
             {
-                _context.Update(movie);
-                await _context.SaveChangesAsync();
+                await _movieRepository.UpdateMovie(movie);
                 return RedirectToAction("Index");
             }
             return View(movie);
@@ -73,7 +72,7 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == id);
+            var movie = await _movieRepository.GetMovieById(id);
             if (movie == null)
             {
                 return NotFound();
@@ -88,19 +87,13 @@ namespace MovieApp.Controllers
             {
                 return NotFound();
             }
-            _context.Remove(movie);
-            await _context.SaveChangesAsync();
+            await _movieRepository.DeleteMovie(movie);
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Customers(int id)
         {
-            var customers = await _context.CustomerMovies
-                .Where(cm => cm.MovieId == id)
-                .Include(cm => cm.Customer)
-                .ThenInclude(c => c.MembershipType)
-                .Select(cm => cm.Customer)
-                .ToListAsync();
+            var customers = await _movieRepository.GetCustomersByMovieId(id);
             return View(customers);
         }
     }
