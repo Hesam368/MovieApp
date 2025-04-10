@@ -28,24 +28,12 @@ namespace MovieApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Movie movie)
         {
-            MovieValidator(movie);
             if (ModelState.IsValid)
             {
                 await _movieRepository.AddMovie(movie);
                 return RedirectToAction("Index");
             }
             return View(movie);
-        }
-
-        private void MovieValidator(Movie movie)
-        {
-            if (movie != null)
-            {
-                if (string.IsNullOrEmpty(movie.Title) || movie.Title.Length > 60)
-                    ModelState.AddModelError("Title", "The title must be not null and at most 60 characters!");
-                if (string.IsNullOrEmpty(movie.Genre) || movie.Genre.Length > 30)
-                    ModelState.AddModelError("Genre", "The genre must be not null and at most 30 characters!");
-            }
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -61,7 +49,6 @@ namespace MovieApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Movie movie)
         {
-            MovieValidator(movie);
             if (ModelState.IsValid)
             {
                 await _movieRepository.UpdateMovie(movie);

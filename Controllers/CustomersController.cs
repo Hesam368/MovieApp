@@ -31,24 +31,12 @@ namespace MovieApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Customer customer)
         {
-            CustomerValidator(customer);
             if (ModelState.IsValid)
             {
                 await _customerRepository.UpdateCustomer(customer);
                 return RedirectToAction("Index");
             }
             return View(customer);
-        }
-
-        private void CustomerValidator(Customer customer)
-        {
-            if (customer != null)
-            {
-                if (string.IsNullOrEmpty(customer.Name) || customer.Name.Length > 60)
-                    ModelState.AddModelError("Name", "The name must be not null and at most 60 characters!");
-                if (customer.MembershipTypeId == 0)
-                    ModelState.AddModelError("MembershipType", "A membership type must be selected!");
-            }
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -66,7 +54,6 @@ namespace MovieApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Customer customer)
         {
-            CustomerValidator(customer);
             if (ModelState.IsValid)
             {
                 await _customerRepository.UpdateCustomer(customer);
