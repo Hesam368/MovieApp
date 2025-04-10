@@ -1,4 +1,4 @@
- using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MovieApp.Models;
@@ -23,8 +23,7 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var membershipTypes = await _customerRepository.GetMembershipTypes();
-            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
+            await SetMembershipTypes();
             return View();
         }
 
@@ -46,8 +45,7 @@ namespace MovieApp.Controllers
             {
                 return NotFound();
             }
-            var membershipTypes = await _customerRepository.GetMembershipTypes();
-            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
+            await SetMembershipTypes();
             return View(customer);
         }
 
@@ -67,10 +65,9 @@ namespace MovieApp.Controllers
             var customer = await _customerRepository.GetCustomerById(id);
             if (customer == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
-            var membershipTypes = await _customerRepository.GetMembershipTypes();
-            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
+            await SetMembershipTypes();
             return View(customer);
         }
 
@@ -92,9 +89,14 @@ namespace MovieApp.Controllers
             {
                 return NotFound();
             }
+            await SetMembershipTypes();
+            return View(customer);
+        }
+
+        private async Task SetMembershipTypes()
+        {
             var membershipTypes = await _customerRepository.GetMembershipTypes();
             ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
-            return View(customer);
         }
     }
 }
