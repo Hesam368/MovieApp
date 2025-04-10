@@ -72,8 +72,10 @@ namespace MovieApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(Customer customer)
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var customer = await _customerRepository.GetCustomerById(id);
             if (customer == null)
             {
                 return NotFound();

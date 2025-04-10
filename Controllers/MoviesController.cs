@@ -68,8 +68,10 @@ namespace MovieApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(Movie movie)
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var movie = await _movieRepository.GetMovieById(id);
             if (movie == null)
             {
                 return NotFound();
