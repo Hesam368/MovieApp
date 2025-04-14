@@ -17,11 +17,6 @@
                             <input asp-for="Title" class="form-control" placeholder="Movie Title" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
-                        <div class="form-group mb-3">
-                            <label asp-for="Genre" class="control-label"></label>
-                            <input asp-for="Genre" class="form-control" placeholder="Movie Genre" />
-                            <span asp-validation-for="Genre" class="text-danger"></span>
-                        </div>
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary">Submit</button>
                             <a asp-controller="Movies" asp-action="Index" class="btn btn-secondary">Cancel</a>
