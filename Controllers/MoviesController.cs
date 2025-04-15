@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MovieApp.Models;
 using MovieApp.Repositories;
@@ -20,9 +21,16 @@ namespace MovieApp.Controllers
             return View(movies);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            await SetGenres();
             return View();
+        }
+
+        private async Task SetGenres()
+        {
+            var genres = await _movieRepository.GetGenres();
+            ViewData["Genres"] = new SelectList(genres, "Id", "Name");
         }
 
         [HttpPost]

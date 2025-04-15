@@ -42,5 +42,9 @@ namespace MovieApp.Repositories
             return movie;
         }
 
+        public async Task<IEnumerable<Genre>> GetGenres()
+        {
+            return await _context.Genre.ToListAsync();
+        }
     }
 }
