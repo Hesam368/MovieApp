@@ -1,4 +1,4 @@
-﻿@model Customer
+﻿@model MovieApp.ViewModels.CustomerViewModel
 @{
     ViewData["Title"] = "Edit Customer";
 }
@@ -24,7 +24,7 @@
                         </div>
                         <div class="form-group mb-3">
                             <label asp-for="MembershipTypeId" class="control-label"></label>
-                            <select asp-for="MembershipTypeId" class="form-control" asp-items="ViewBag.MembershipTypes"></select>
+                            <select asp-for="MembershipTypeId" class="form-control" asp-items="@(new SelectList(Model.MembershipTypes, "Id", "Name"))"></select>
                             <span asp-validation-for="MembershipTypeId" class="text-danger"></span>
                         </div>
                         <div class="form-group mb-3">

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using MovieApp.Models;
 using MovieApp.Repositories;
+using MovieApp.ViewModels;
 
 namespace MovieApp.Controllers
 {
@@ -23,19 +23,30 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Create()
         {
-            await SetMembershipTypes();
-            return View();
+            var customerVM = new CustomerViewModel()
+            {
+                MembershipTypes = await _customerRepository.GetMembershipTypes()
+            };
+            return View(customerVM);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Customer customer)
+        public async Task<IActionResult> Create(CustomerViewModel customerVM)
         {
             if (ModelState.IsValid)
             {
-                await _customerRepository.UpdateCustomer(customer);
+                var customer = new Customer
+                {
+                    Name = customerVM.Name,
+                    IsSubscribedToNewsletter = customerVM.IsSubscribedToNewsletter,
+                    Birthdate = customerVM.Birthdate,
+                    MembershipTypeId = customerVM.MembershipTypeId
+                };
+                await _customerRepository.AddCustomer(customer);
                 return RedirectToAction("Index");
             }
-            return View(customer);
+            customerVM.MembershipTypes = await _customerRepository.GetMembershipTypes();
+            return View(customerVM);
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -45,19 +56,36 @@ namespace MovieApp.Controllers
             {
                 return NotFound();
             }
-            await SetMembershipTypes();
-            return View(customer);
+            var customerVM = new CustomerViewModel()
+            {
+                Id = customer.Id,
+                Name = customer.Name,
+                IsSubscribedToNewsletter = customer.IsSubscribedToNewsletter,
+                Birthdate = customer.Birthdate,
+                MembershipTypeId = customer.MembershipTypeId,
+                MembershipTypes = await _customerRepository.GetMembershipTypes()
+            };
+            return View(customerVM);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Customer customer)
+        public async Task<IActionResult> Edit(CustomerViewModel customerVM)
         {
             if (ModelState.IsValid)
             {
+                var customer = new Customer
+                {
+                    Id = customerVM.Id,
+                    Name = customerVM.Name,
+                    IsSubscribedToNewsletter = customerVM.IsSubscribedToNewsletter,
+                    Birthdate = customerVM.Birthdate,
+                    MembershipTypeId = customerVM.MembershipTypeId
+                };
                 await _customerRepository.UpdateCustomer(customer);
                 return RedirectToAction("Index");
             }
-            return View(customer);
+            customerVM.MembershipTypes = await _customerRepository.GetMembershipTypes();
+            return View(customerVM);
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -67,7 +95,7 @@ namespace MovieApp.Controllers
             {
                 return NotFound();
             }
-            await SetMembershipTypes();
+            await _customerRepository.GetMembershipTypes();
             return View(customer);
         }
 
@@ -91,14 +119,8 @@ namespace MovieApp.Controllers
             {
                 return NotFound();
             }
-            await SetMembershipTypes();
+            await _customerRepository.GetMembershipTypes();
             return View(customer);
-        }
-
-        private async Task SetMembershipTypes()
-        {
-            var membershipTypes = await _customerRepository.GetMembershipTypes();
-            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
         }
     }
 }
