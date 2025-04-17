@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MovieApp.Models;
 using MovieApp.Repositories;
 using MovieApp.ViewModels;
@@ -17,110 +16,134 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var customers = await _customerRepository.GetAllCustomers();
+            var customers = await _customerRepository.GetAllCustomersAsync();
             return View(customers);
         }
 
         public async Task<IActionResult> Create()
         {
-            var customerVM = new CustomerViewModel()
+            var model = new CustomerViewModel()
             {
-                MembershipTypes = await _customerRepository.GetMembershipTypes()
+                MembershipTypes = await _customerRepository.GetMembershipTypesAsync()
             };
-            return View(customerVM);
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CustomerViewModel customerVM)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CustomerViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var customer = new Customer
-                {
-                    Name = customerVM.Name,
-                    IsSubscribedToNewsletter = customerVM.IsSubscribedToNewsletter,
-                    Birthdate = customerVM.Birthdate,
-                    MembershipTypeId = customerVM.MembershipTypeId
-                };
-                await _customerRepository.AddCustomer(customer);
+                var customer = BuildCustomer(model);
+                await _customerRepository.AddCustomerAsync(customer);
                 return RedirectToAction("Index");
             }
-            customerVM.MembershipTypes = await _customerRepository.GetMembershipTypes();
-            return View(customerVM);
+            model.MembershipTypes = await _customerRepository.GetMembershipTypesAsync();
+            return View(model);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var customer = await _customerRepository.GetCustomerById(id);
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
-            var customerVM = new CustomerViewModel()
+            var model = await BuildCustomerViewModel(customer);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(CustomerViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var customer = BuildCustomer(model);
+                customer.Id = model.Id;
+
+                await _customerRepository.UpdateCustomerAsync(customer);
+                return RedirectToAction("Index");
+            }
+            model.MembershipTypes = await _customerRepository.GetMembershipTypesAsync();
+            return View(model);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            var model = await BuildCustomerViewModel(customer);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            await _customerRepository.DeleteCustomerAsync(customer);
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            var model = await BuildCustomerViewModel(customer);
+            return View(model);
+        }
+
+        private async Task<CustomerViewModel> BuildCustomerViewModel(Customer customer)
+        {
+            return new CustomerViewModel()
             {
                 Id = customer.Id,
                 Name = customer.Name,
                 IsSubscribedToNewsletter = customer.IsSubscribedToNewsletter,
                 Birthdate = customer.Birthdate,
                 MembershipTypeId = customer.MembershipTypeId,
-                MembershipTypes = await _customerRepository.GetMembershipTypes()
+                MembershipTypes = await _customerRepository.GetMembershipTypesAsync()
             };
-            return View(customerVM);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(CustomerViewModel customerVM)
+        private static Customer BuildCustomer(CustomerViewModel model)
         {
-            if (ModelState.IsValid)
+            return new Customer()
             {
-                var customer = new Customer
-                {
-                    Id = customerVM.Id,
-                    Name = customerVM.Name,
-                    IsSubscribedToNewsletter = customerVM.IsSubscribedToNewsletter,
-                    Birthdate = customerVM.Birthdate,
-                    MembershipTypeId = customerVM.MembershipTypeId
-                };
-                await _customerRepository.UpdateCustomer(customer);
-                return RedirectToAction("Index");
-            }
-            customerVM.MembershipTypes = await _customerRepository.GetMembershipTypes();
-            return View(customerVM);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            var customer = await _customerRepository.GetCustomerById(id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-            await _customerRepository.GetMembershipTypes();
-            return View(customer);
-        }
-
-        [HttpPost]
-        [ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var customer = await _customerRepository.GetCustomerById(id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-            await _customerRepository.DeleteCustomer(customer);
-            return RedirectToAction("Index");
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var customer = await _customerRepository.GetCustomerById(id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-            await _customerRepository.GetMembershipTypes();
-            return View(customer);
+                Name = model.Name,
+                IsSubscribedToNewsletter = model.IsSubscribedToNewsletter,
+                Birthdate = model.Birthdate,
+                MembershipTypeId = model.MembershipTypeId
+            };
         }
     }
 }

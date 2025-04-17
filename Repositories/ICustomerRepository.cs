@@ -4,11 +4,11 @@ namespace MovieApp.Repositories
 {
     public interface ICustomerRepository
     {
-        Task<IEnumerable<Customer>> GetAllCustomers();
-        Task<Customer> AddCustomer(Customer customer);
-        Task<Customer?> GetCustomerById(int customerId);
-        Task<Customer?> UpdateCustomer(Customer customer);
-        Task<Customer?> DeleteCustomer(Customer customer);
-        Task<IEnumerable<MembershipType>> GetMembershipTypes();
+        Task<IEnumerable<Customer>> GetAllCustomersAsync();
+        Task<Customer> AddCustomerAsync(Customer customer);
+        Task<Customer?> GetCustomerByIdAsync(int customerId);
+        Task<Customer?> UpdateCustomerAsync(Customer customer);
+        Task<Customer?> DeleteCustomerAsync(Customer customer);
+        Task<IEnumerable<MembershipType>> GetMembershipTypesAsync();
     }
 }
