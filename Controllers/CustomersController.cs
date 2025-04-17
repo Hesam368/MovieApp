@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using MovieApp.Models;
 using MovieApp.Repositories;
+using MovieApp.ViewModels;
 
 namespace MovieApp.Controllers
 {
@@ -17,88 +16,134 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var customers = await _customerRepository.GetAllCustomers();
+            var customers = await _customerRepository.GetAllCustomersAsync();
             return View(customers);
         }
 
         public async Task<IActionResult> Create()
         {
-            await SetMembershipTypes();
-            return View();
+            var model = new CustomerViewModel()
+            {
+                MembershipTypes = await _customerRepository.GetMembershipTypesAsync()
+            };
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Customer customer)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CustomerViewModel model)
         {
             if (ModelState.IsValid)
             {
-                await _customerRepository.UpdateCustomer(customer);
+                var customer = BuildCustomer(model);
+                await _customerRepository.AddCustomerAsync(customer);
                 return RedirectToAction("Index");
             }
-            return View(customer);
+            model.MembershipTypes = await _customerRepository.GetMembershipTypesAsync();
+            return View(model);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var customer = await _customerRepository.GetCustomerById(id);
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
-            await SetMembershipTypes();
-            return View(customer);
+            var model = await BuildCustomerViewModel(customer);
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Customer customer)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(CustomerViewModel model)
         {
             if (ModelState.IsValid)
             {
-                await _customerRepository.UpdateCustomer(customer);
+                var customer = BuildCustomer(model);
+                customer.Id = model.Id;
+
+                await _customerRepository.UpdateCustomerAsync(customer);
                 return RedirectToAction("Index");
             }
-            return View(customer);
+            model.MembershipTypes = await _customerRepository.GetMembershipTypesAsync();
+            return View(model);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var customer = await _customerRepository.GetCustomerById(id);
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
-            await SetMembershipTypes();
-            return View(customer);
+            var model = await BuildCustomerViewModel(customer);
+            return View(model);
         }
 
         [HttpPost]
         [ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var customer = await _customerRepository.GetCustomerById(id);
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
-            await _customerRepository.DeleteCustomer(customer);
+            await _customerRepository.DeleteCustomerAsync(customer);
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var customer = await _customerRepository.GetCustomerById(id);
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
-            await SetMembershipTypes();
-            return View(customer);
+            var model = await BuildCustomerViewModel(customer);
+            return View(model);
         }
 
-        private async Task SetMembershipTypes()
+        private async Task<CustomerViewModel> BuildCustomerViewModel(Customer customer)
         {
-            var membershipTypes = await _customerRepository.GetMembershipTypes();
-            ViewData["MembershipTypes"] = new SelectList(membershipTypes, "Id", "Name");
+            return new CustomerViewModel()
+            {
+                Id = customer.Id,
+                Name = customer.Name,
+                IsSubscribedToNewsletter = customer.IsSubscribedToNewsletter,
+                Birthdate = customer.Birthdate,
+                MembershipTypeId = customer.MembershipTypeId,
+                MembershipTypes = await _customerRepository.GetMembershipTypesAsync()
+            };
+        }
+
+        private static Customer BuildCustomer(CustomerViewModel model)
+        {
+            return new Customer()
+            {
+                Name = model.Name,
+                IsSubscribedToNewsletter = model.IsSubscribedToNewsletter,
+                Birthdate = model.Birthdate,
+                MembershipTypeId = model.MembershipTypeId
+            };
         }
     }
 }
