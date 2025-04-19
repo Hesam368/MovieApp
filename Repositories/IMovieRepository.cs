@@ -1,14 +1,16 @@
 ﻿using MovieApp.Models;
+using MovieApp.ViewModels;
 
 namespace MovieApp.Repositories
 {
     public interface IMovieRepository
     {
-        Task<IEnumerable<Movie>> GetAllMovies();
-        Task<Movie> AddMovie(Movie movie);
-        Task<Movie?> GetMovieById(int movieId);
-        Task<Movie?> UpdateMovie(Movie movie);
-        Task<Movie?> DeleteMovie(Movie movie);
-        Task<IEnumerable<Genre>> GetGenres();
+        Task<IEnumerable<Movie>> GetAllMoviesAsync();
+        Task<Movie> AddMovieAsync(Movie movie);
+        Task<Movie?> GetMovieByIdAsync(int movieId);
+        Task<Movie?> UpdateMovieAsync(Movie movie);
+        Task<Movie?> DeleteMovieAsync(Movie movie);
+        Task<IEnumerable<Genre>> GetGenresAsync();
+        Task<ICollection<Genre>> GetSelectedGenres(MovieViewModel model);
     }
 }

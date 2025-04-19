@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using MovieApp.Models;
 using MovieApp.Repositories;
+using MovieApp.ViewModels;
 
 namespace MovieApp.Controllers
 {
@@ -17,75 +16,144 @@ namespace MovieApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var movies = await _movieRepository.GetAllMovies();
+            var movies = await _movieRepository.GetAllMoviesAsync();
             return View(movies);
         }
 
         public async Task<IActionResult> Create()
         {
-            await SetGenres();
-            return View();
-        }
-
-        private async Task SetGenres()
-        {
-            var genres = await _movieRepository.GetGenres();
-            ViewData["Genres"] = new SelectList(genres, "Id", "Name");
+            var model = new MovieViewModel
+            {
+                AllGenres = await _movieRepository.GetGenresAsync()
+            };
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Movie movie)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(MovieViewModel model)
         {
             if (ModelState.IsValid)
             {
-                await _movieRepository.AddMovie(movie);
+                var movie = BuildMovie(model);
+                movie.Genres = await _movieRepository.GetSelectedGenres(model); //Bind selected genres
+                await _movieRepository.AddMovieAsync(movie);
                 return RedirectToAction("Index");
             }
-            return View(movie);
+            model.AllGenres = await _movieRepository.GetGenresAsync();
+            return View(model);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var movie = await _movieRepository.GetMovieById(id);
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var movie = await _movieRepository.GetMovieByIdAsync(id);
             if (movie == null)
             {
                 return NotFound();
             }
-            return View(movie);
+            var model = await BuildMovieViewModel(movie);
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Movie movie)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(MovieViewModel model)
         {
             if (ModelState.IsValid)
             {
-                await _movieRepository.UpdateMovie(movie);
+                var movie = BuildMovie(model);
+                movie.Genres = await _movieRepository.GetSelectedGenres(model); //Bind selected genres
+                movie.Id = model.Id; // Ensure the ID is set for the update
+
+                await _movieRepository.UpdateMovieAsync(movie);
                 return RedirectToAction("Index");
             }
-            return View(movie);
+            return View(model);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var movie = await _movieRepository.GetMovieById(id);
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var movie = await _movieRepository.GetMovieByIdAsync(id);
             if (movie == null)
             {
                 return NotFound();
             }
-            return View(movie);
+            var model = await BuildMovieViewModel(movie);
+            return View(model);
         }
 
         [HttpPost]
         [ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var movie = await _movieRepository.GetMovieById(id);
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var movie = await _movieRepository.GetMovieByIdAsync(id);
             if (movie == null)
             {
                 return NotFound();
             }
-            await _movieRepository.DeleteMovie(movie);
+            await _movieRepository.DeleteMovieAsync(movie);
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var movie = await _movieRepository.GetMovieByIdAsync(id);
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            var model = await BuildMovieViewModel(movie);
+            return View(model);
+        }
+
+        private Movie BuildMovie(MovieViewModel model)
+        {
+            return new Movie
+            {
+                Title = model.Title,
+                Story = model.Story,
+                ShortDesc = model.ShortDesc,
+                ImageUrl = model.ImageUrl,
+                UrlHandle = model.UrlHandle,
+                PublishedDate = model.PublishedDate,
+                Director = model.Director,
+                Visible = model.Visible
+            };
+        }
+
+        private async Task<MovieViewModel> BuildMovieViewModel(Movie movie)
+        {
+            return new MovieViewModel
+            {
+                Id = movie.Id,
+                Title = movie.Title,
+                Story = movie.Story,
+                ShortDesc = movie.ShortDesc,
+                ImageUrl = movie.ImageUrl,
+                UrlHandle = movie.UrlHandle,
+                PublishedDate = movie.PublishedDate,
+                Director = movie.Director,
+                Visible = movie.Visible,
+                AllGenres = await _movieRepository.GetGenresAsync(),
+                SelectedGenreIds = movie.Genres?.Select(g => g.Id).ToList()
+            };
         }
 
     }

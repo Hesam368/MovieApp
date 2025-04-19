@@ -1,4 +1,4 @@
-@model Movie
+@model MovieApp.ViewModels.MovieViewModel
 @{
     ViewData["Title"] = "Delete Movie";
 }
@@ -13,10 +13,7 @@
                 <div class="card-body">
                     <form asp-action="Delete" method="post">
                         <input type="hidden" asp-for="Id" />
-                        <div class="form-group mb-3">
-                            <label asp-for="Title" class="control-label"></label>
-                            <input asp-for="Title" class="form-control" readonly />
-                        </div>
+                        @await Html.PartialAsync("_MovieReadOnly", Model)
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-danger">Delete</button>
                             <a asp-controller="Movies" asp-action="Index" class="btn btn-secondary">Cancel</a>

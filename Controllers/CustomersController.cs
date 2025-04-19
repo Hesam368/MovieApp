@@ -65,7 +65,7 @@ namespace MovieApp.Controllers
             if (ModelState.IsValid)
             {
                 var customer = BuildCustomer(model);
-                customer.Id = model.Id;
+                customer.Id = model.Id; // Ensure the ID is set for the update
 
                 await _customerRepository.UpdateCustomerAsync(customer);
                 return RedirectToAction("Index");

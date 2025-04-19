@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieApp.Models;
+using MovieApp.ViewModels;
 
 namespace MovieApp.Repositories
 {
@@ -11,40 +12,45 @@ namespace MovieApp.Repositories
         {
             _context = context;
         }
-        public async Task<Movie> AddMovie(Movie movie)
+        public async Task<Movie> AddMovieAsync(Movie movie)
         {
             _context.Add(movie);
             await _context.SaveChangesAsync();
             return movie;
         }
 
-        public async Task<Movie?> DeleteMovie(Movie movie)
+        public async Task<Movie?> DeleteMovieAsync(Movie movie)
         {
             _context.Remove(movie);
             await _context.SaveChangesAsync();
             return movie;
         }
 
-        public async Task<Movie?> GetMovieById(int movieId)
+        public async Task<Movie?> GetMovieByIdAsync(int movieId)
         {
-            return await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
+            return await _context.Movies.Include(m => m.Genres).FirstOrDefaultAsync(m => m.Id == movieId);
         }
 
-        public async Task<IEnumerable<Movie>> GetAllMovies()
+        public async Task<IEnumerable<Movie>> GetAllMoviesAsync()
         {
-            return await _context.Movies.ToListAsync();
+            return await _context.Movies.Include(m => m.Genres).ToListAsync();
         }
 
-        public async Task<Movie?> UpdateMovie(Movie movie)
+        public async Task<Movie?> UpdateMovieAsync(Movie movie)
         {
             _context.Update(movie);
             await _context.SaveChangesAsync();
             return movie;
         }
 
-        public async Task<IEnumerable<Genre>> GetGenres()
+        public async Task<IEnumerable<Genre>> GetGenresAsync()
         {
             return await _context.Genre.ToListAsync();
+        }
+
+        public async Task<ICollection<Genre>> GetSelectedGenres(MovieViewModel model)
+        {
+            return await _context.Genre.Where(g => model.SelectedGenreIds.Contains(g.Id)).ToListAsync();
         }
     }
 }

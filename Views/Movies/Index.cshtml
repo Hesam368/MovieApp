@@ -13,6 +13,9 @@ else
         <thead>
             <tr>
                 <th>Title</th>
+                <th>Published Date</th>
+                <th>Director</th>
+                <th>Genres</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -21,13 +24,23 @@ else
             {
                 <tr>
                     <td>@item.Title</td>
+                    <td>@item.PublishedDate</td>
+                    <td>@item.Director</td>
+                    <td>
+                        <div class="d-flex">
+                            @foreach (var genre in item.Genres)
+                            {
+                                <span class="badge bg-primary me-1">@genre.Name</span>
+                            }
+                        </div>
+                    </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                         <a asp-controller="CustomerMovie" asp-action="Customers" asp-route-id="@item.Id">View Customers</a>
                     </td>
                 </tr>
-
             }
         </tbody>
     </table>
