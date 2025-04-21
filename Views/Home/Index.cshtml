@@ -1,8 +1,50 @@
-﻿@{
+﻿@model List<MovieApp.Models.Movie>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-5 py-5">
+        <div class="col-12 col-lg-6">
+            <h2 class="display-5 fw-bold lh-1 mb-3">
+                Movie Application
+            </h2>
+            <p class="lead">
+                This is a simple movie application that allows you to view and manage your favorite movies.
+            </p>
+        </div>
+        <div class="col-12 col-lg-6">
+            <img src="~/Images/movie_poster.jpg" class="img-fluid rounded" alt="Movie Poster" />
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-8">
+            @foreach(var movie in Model)
+            {
+                <div class="mb-5 bg-light box-shadow py-5">
+                    <h3 class="mb-4">@movie.Title</h3>
+                    <img src="@movie.ImageUrl" class="img-fluid mb-2 d-block" alt="@movie.Title" />
+                    <p class="mb-4">
+                        Director: @movie.Director
+                        <br />
+                        Published Date: @movie.PublishedDate.ToShortDateString()
+                    </p>
+                    <p class="mb-4">
+                        <strong>Genres:</strong>
+                        @foreach (var genre in movie.Genres)
+                        {
+                            <span class="badge bg-secondary">@genre</span>
+                        }
+                    </p>
+                    <p class="mb-4">
+                        @movie.ShortDesc
+                    </p>
+                    <a class="btn btn-dark" href="#">Read more...</a>
+                </div>
+            }
+        </div>
+    </div>
 </div>

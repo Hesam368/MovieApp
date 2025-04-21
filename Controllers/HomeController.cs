@@ -1,21 +1,25 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MovieApp.Models;
+using MovieApp.Repositories;
 
 namespace MovieApp.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly IMovieRepository _movieRepository;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, IMovieRepository movieRepository)
     {
         _logger = logger;
+        _movieRepository = movieRepository;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var movies = await _movieRepository.GetAllMoviesAsync();
+        return View(movies);
     }
 
     public IActionResult Privacy()
