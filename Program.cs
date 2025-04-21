@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using MovieApp.Repositories;
 using FluentValidation.AspNetCore;
 using FluentValidation;
+using MovieApp.Data;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +17,13 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Add DbContext
 builder.Services.AddDbContext<MovieAppContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AuthContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AuthContext>()
+    .AddDefaultTokenProviders();
 
 // Add Repositories
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
@@ -39,6 +46,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
