@@ -6,7 +6,7 @@ namespace MovieApp.Data
 {
     public class AuthContext : IdentityDbContext
     {
-        public AuthContext(DbContextOptions options)
+        public AuthContext(DbContextOptions<AuthContext> options)
             : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)

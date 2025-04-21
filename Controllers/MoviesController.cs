@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieApp.Models;
 using MovieApp.Repositories;
@@ -20,6 +21,7 @@ namespace MovieApp.Controllers
             return View(movies);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
             var model = new MovieViewModel
