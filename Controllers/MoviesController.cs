@@ -1,18 +1,27 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MovieApp.Models;
 using MovieApp.Repositories;
 using MovieApp.ViewModels;
+using System.Threading.Tasks;
 
 namespace MovieApp.Controllers
 {
     public class MoviesController : Controller
     {
         private readonly IMovieRepository _movieRepository;
+        private readonly ILikeRepository _likeRepository;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public MoviesController(IMovieRepository movieRepository)
+        public MoviesController(IMovieRepository movieRepository, ILikeRepository likeRepository,
+            UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _movieRepository = movieRepository;
+            _likeRepository = likeRepository;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public async Task<IActionResult> Index()
@@ -123,6 +132,37 @@ namespace MovieApp.Controllers
             }
             var model = await BuildMovieViewModel(movie);
             return View(model);
+        }
+
+        public async Task<IActionResult> ReadMore(string urlHandle)
+        {
+            if (string.IsNullOrEmpty(urlHandle))
+            {
+                return BadRequest();
+            }
+            var movie = await _movieRepository.GetMovieByUrlAsync(urlHandle);
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            var movieLikes = await _likeRepository.GetMovieLikesAsync(movie.Id);
+            movie.likes = movieLikes?.ToList();
+
+            ViewData["movieLiked"] = false;
+            if (_signInManager.IsSignedIn(User))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    var userId = user.Id;
+                    var userLikes = movie.likes?.FirstOrDefault(l => l.UserGId == Guid.Parse(userId));
+                    if (userLikes != null)
+                    {
+                        ViewData["movieLiked"] = true;
+                    }
+                }
+            }
+            return View(movie);
         }
 
         private Movie BuildMovie(MovieViewModel model)

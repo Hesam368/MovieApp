@@ -14,7 +14,7 @@ namespace MovieApp.Repositories
         }
         public async Task<Movie> AddMovieAsync(Movie movie)
         {
-            _context.Add(movie);
+            await _context.AddAsync(movie);
             await _context.SaveChangesAsync();
             return movie;
         }
@@ -51,6 +51,13 @@ namespace MovieApp.Repositories
         public async Task<ICollection<Genre>> GetSelectedGenres(MovieViewModel model)
         {
             return await _context.Genre.Where(g => model.SelectedGenreIds.Contains(g.Id)).ToListAsync();
+        }
+
+        public async Task<Movie?> GetMovieByUrlAsync(string urlHandle)
+        {
+            return await _context.Movies
+                .Include(m => m.Genres)
+                .FirstOrDefaultAsync(m => m.UrlHandle == urlHandle);
         }
     }
 }

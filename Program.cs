@@ -46,6 +46,7 @@ builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerMovieRepository, CustomerMovieRepository>();
 builder.Services.AddScoped<IImageRepository, CloudinaryImageRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 
 var app = builder.Build();
 

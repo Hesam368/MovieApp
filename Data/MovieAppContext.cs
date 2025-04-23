@@ -11,4 +11,5 @@ public class MovieAppContext : DbContext
     public DbSet<MembershipType> MembershipTypes { get; set; }
     public DbSet<CustomerMovie> CustomerMovies { get; set; }
     public DbSet<Genre> Genre { get; set; }
+    public DbSet<Like> Likes { get; set; }
 }

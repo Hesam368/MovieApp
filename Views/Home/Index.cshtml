@@ -36,13 +36,13 @@
                         <strong>Genres:</strong>
                         @foreach (var genre in movie.Genres)
                         {
-                            <span class="badge bg-secondary">@genre</span>
+                            <span class="badge bg-secondary">@genre.Name</span>
                         }
                     </p>
                     <p class="mb-4">
                         @movie.ShortDesc
                     </p>
-                    <a class="btn btn-dark" href="#">Read more...</a>
+                    <a class="btn btn-dark" asp-area="" asp-controller="Movies" asp-action="ReadMore" asp-route-urlHandle="@movie.UrlHandle">Read more...</a>
                 </div>
             }
         </div>
