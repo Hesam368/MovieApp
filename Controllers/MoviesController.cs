@@ -24,9 +24,19 @@ namespace MovieApp.Controllers
             _signInManager = signInManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchQuery, string? sortBy, string? direction, 
+            int pageSize = 2, int pageNumber = 1)
         {
-            var movies = await _movieRepository.GetAllMoviesAsync();
+            var totalRecords = await _movieRepository.GetCountAsync();
+            var totalPages = Math.Ceiling((decimal)totalRecords / pageSize);
+
+            ViewBag.pageNumber = pageNumber;
+            ViewBag.totalPages = totalPages;
+            ViewBag.searchQuery = searchQuery;
+            ViewBag.sortBy = sortBy;
+            ViewBag.direction = direction;
+            var movies = await _movieRepository.GetAllMoviesAsync(
+                searchQuery, sortBy, direction, pageNumber, pageSize);
             return View(movies);
         }
 
