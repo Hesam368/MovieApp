@@ -36,5 +36,6 @@ namespace MovieApp.Models
 
         public ICollection<CustomerMovie>? customerMovies { get; set; }
         public ICollection<Genre>? Genres { get; set; }
+        public ICollection<Like>? likes { get; set; }
     }
 }

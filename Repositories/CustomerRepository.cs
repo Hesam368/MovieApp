@@ -13,7 +13,7 @@ namespace MovieApp.Repositories
         }
         public async Task<Customer> AddCustomerAsync(Customer customer)
         {
-            _context.Add(customer);
+            await _context.AddAsync(customer);
             await _context.SaveChangesAsync();
             return customer;
         }

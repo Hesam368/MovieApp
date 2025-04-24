@@ -1,48 +1,116 @@
 @model List<Movie>
 @{
     ViewData["Title"] = "Movies";
+    int currPage = @Convert.ToInt32(ViewBag.pageNumber);
+    int nextPage = @Convert.ToInt32(ViewBag.pageNumber) + 1;
+    int prevPage = @Convert.ToInt32(ViewBag.pageNumber) - 1;
 }
-<h3>Movies</h3>
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h3>Movies</h3>
+    </div>
+</div>
+
+<form method="get" asp-controller="Movies" asp-action="Index">
+    <div class="container mt-2">
+        <div class="row">
+            <div class="col col-md-3 d-flex">
+                <input type="text" class="form-control" name="searchQuery" value="@ViewBag.searchQuery"/>
+                <button class="btn btn-warning ms-3">Search</button>
+            </div>
+        </div>
+    </div>
+</form>
+
 @if (Model.Count == 0)
 {
     <p>No Movie has been created yet!</p>
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Published Date</th>
-                <th>Director</th>
-                <th>Genres</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <div class="container mt-3">
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td>@item.Title</td>
-                    <td>@item.PublishedDate</td>
-                    <td>@item.Director</td>
-                    <td>
-                        <div class="d-flex">
-                            @foreach (var genre in item.Genres)
-                            {
-                                <span class="badge bg-primary me-1">@genre.Name</span>
-                            }
-                        </div>
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-controller="CustomerMovie" asp-action="Customers" asp-route-id="@item.Id">View Customers</a>
-                    </td>
+                    <th>Title
+                        <span>
+                            <span>
+                                <a class="btn btn-light asp-controller="Movies" asp-action="Index"
+                                asp-route-sortBy="Title" asp-route-direction="Asc" asp-route-searchQuery="@ViewBag.searchQuery">
+                                    <i class="bi bi-arrow-up"></i>
+                                </a>
+                            </span>
+                            <span>
+                                <a class="btn btn-light" asp-controller="Movies" asp-action="Index"
+                                asp-route-sortBy="Title" asp-route-direction="Desc" asp-route-searchQuery="@ViewBag.searchQuery">
+                                    <i class="bi bi-arrow-down"></i>
+                                </a>
+                            </span>
+                        </span>
+                    </th>
+                    <th>Published Date</th>
+                    <th>Director</th>
+                    <th>Genres</th>
+                    <th>Actions</th>
                 </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.PublishedDate</td>
+                        <td>@item.Director</td>
+                        <td>
+                            <div class="d-flex">
+                                @foreach (var genre in item.Genres)
+                                {
+                                    <span class="badge bg-primary me-1">@genre.Name</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-controller="CustomerMovie" asp-action="Customers" asp-route-id="@item.Id">View Customers</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @if (currPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Movies" asp-action="Index" 
+                    asp-route-pageNumber="@prevPage" asp-route-sortBy="@ViewBag.sortBy" 
+                    asp-route-direction="@ViewBag.direction" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
             }
-        </tbody>
-    </table>
+            @for (int i = 1; i <= ViewBag.totalPages; i++)
+            {
+                <li class="page-item"><a class="page-link" 
+                    asp-controller="Movies" asp-action="Index" asp-route-pageNumber="@i"
+                       asp-route-sortBy="@ViewBag.sortBy"
+                       asp-route-direction="@ViewBag.direction">@i</a>
+                </li>
+            }
+            @if (currPage < ViewBag.totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-controller="Movies" asp-action="Index"
+                       asp-route-pageNumber="@nextPage" asp-route-sortBy="@ViewBag.sortBy"
+                       asp-route-direction="@ViewBag.direction" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>                
+            }
+        </ul>
+    </nav>
 }
 <a asp-action="Create" class="btn btn-primary">Create Movie</a>

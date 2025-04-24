@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieApp.Models;
 using MovieApp.Repositories;
@@ -5,6 +6,7 @@ using MovieApp.ViewModels;
 
 namespace MovieApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CustomersController : Controller
     {
         private readonly ICustomerRepository _customerRepository;

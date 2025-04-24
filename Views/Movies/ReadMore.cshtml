@@ -1,0 +1,107 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@model MovieApp.Models.Movie
+
+@{
+    ViewData["Title"] = "Read More";
+}
+
+<div class="container" my-5>
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-6">
+            <h2 class="mb-3">@Model.Title</h2>
+            <div class="d-flex justify-content-between mb-3">
+                <span class="text-dark">@Model.PublishedDate.ToShortDateString()</span>
+                <span class="text-dark">@Model.Director</span>
+            </div>
+            <div class="mb-3">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    if ((bool)ViewData["movieLiked"])
+                    {
+                        <a style="cursor:pointer;">
+                            <i class="bi bi-hand-thumbs-up-fill"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <a id="btnLike" style="cursor:pointer;">
+                            <i class="bi bi-hand-thumbs-up"></i>
+                        </a>
+                    }                    
+                }
+                <span id="totalLikes">@Model.likes?.Count</span> Likes
+            </div>
+            <div class="d-flex mb-3">
+                @foreach (var genre in Model.Genres)
+                {
+                    <span class="badge badge-primary me-1 text-dark">@genre.Name</span>
+                }
+            </div>
+            <img src="@Model.ImageUrl" class="img-fluid mb-3 d-block"/>
+            <div class="mb-3">
+                @Html.Raw(Model.Story)
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const btnLikeElement = document.getElementById('btnLike');
+        const totalLikesElement = document.getElementById('totalLikes');
+
+        async function GetLikes() {
+            try {
+                const response = await fetch(`/api/MovieLike/${@Model.Id}/GetLikes`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch likes: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                totalLikesElement.innerHTML = result.length;
+            } catch (error) {
+                console.error("Error fetching likes:", error);
+            }
+        }
+
+        async function AddLikeForMovie() {
+            try {
+                const response = await fetch('/api/MovieLike/Add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    },
+                    body: JSON.stringify({
+                        movieId: @Model.Id,
+                        userGId: '@UserManager.GetUserId(User)'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to add like: ${response.statusText}`);
+                }
+
+                btnLikeElement.innerHTML = '<i class="bi bi-hand-thumbs-up-fill"></i>';
+                btnLikeElement.removeEventListener('click', AddLikeForMovie);
+                GetLikes();
+            } catch (error) {
+                console.error("Error adding like:", error);
+            }
+        }
+
+        if (btnLikeElement) {
+            btnLikeElement.addEventListener('click', AddLikeForMovie);
+        }
+    </script>
+
+}

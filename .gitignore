@@ -12,3 +12,6 @@ packages/
 
 # Ignore temporary files
 *.tmp
+
+# Ignore Environment variables
+.env
